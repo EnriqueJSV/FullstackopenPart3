@@ -71,6 +71,27 @@ const generateId = () => {
 app.post("/api/persons", (req, res) => {
   const body = req.body;
 
+  // ERRORS
+
+  // verify content
+  if (!body.name || !body.number) {
+    return res.status(400).json({
+      error: "name or number missing",
+    });
+  }
+
+  // create an array only with persons name
+  const verifPerson = persons.map((person) => person.name);
+
+  // verify if exists
+  if (verifPerson.some((person) => body.name === person)) {
+    return res.status(400).json({
+      error: "name must be unique",
+    });
+  }
+
+  // CREATE
+
   const person = {
     id: generateId(),
     name: body.name,
