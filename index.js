@@ -45,23 +45,42 @@ app.get("/api/persons", (req, res) => {
 
 // get one person
 app.get("/api/persons/:id", (req, res) => {
-    const id = Number(req.params.id)
-    const person = persons.find(person => person.id === id)
-    
-    // if exists
-    if (person) {
-        res.json(person)
-    } else {
-        res.status(404).end()
-    }
-})
+  const id = Number(req.params.id);
+  const person = persons.find((person) => person.id === id);
+
+  // if exists
+  if (person) {
+    res.json(person);
+  } else {
+    res.status(404).end();
+  }
+});
 
 // delete
 app.delete("/api/persons/:id", (req, res) => {
-    const id = Number(req.params.id)
-    persons = persons.filter(person => person.id !== id)
-    res.status(204).end()
-})
+  const id = Number(req.params.id);
+  persons = persons.filter((person) => person.id !== id);
+  res.status(204).end();
+});
+
+const generateId = () => {
+  return Math.floor(Math.random() * 10000);
+};
+
+// add new person
+app.post("/api/persons", (req, res) => {
+  const body = req.body;
+
+  const person = {
+    id: generateId(),
+    name: body.name,
+    number: body.number,
+  };
+
+  persons = persons.concat(person);
+
+  res.json(person);
+});
 
 const PORT = 3001;
 app.listen(PORT, () => {
