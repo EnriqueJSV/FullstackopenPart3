@@ -1,16 +1,18 @@
 const express = require("express");
 const app = express();
 const morgan = require("morgan");
+const cors = require("cors")
 
 // create token with the content created
 morgan.token("content", (req) => JSON.stringify(req.body));
 
-app.use(express.json());
+app.use(express.json()); //permite el post
 app.use(
   morgan(
     ":method :url :status :res[content-length] - :response-time ms :content"
   )
-);
+); // imprime en consola la info necesaria
+app.use(cors()) //permite obtener la info para el front
 
 let persons = [
   {
