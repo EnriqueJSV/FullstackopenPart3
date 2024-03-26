@@ -13,6 +13,7 @@ app.use(
   )
 ); // imprime en consola la info necesaria
 app.use(cors()) //permite obtener la info para el front
+app.use(express.static('dist')) //Para poder ver el front como principal
 
 let persons = [
   {
