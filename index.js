@@ -59,15 +59,19 @@ app.get("/api/persons", (req, res) => {
 
 // get one person
 app.get("/api/persons/:id", (req, res) => {
-  const id = Number(req.params.id);
-  const person = persons.find((person) => person.id === id);
+  // const id = Number(req.params.id);
+  // const person = persons.find((person) => person.id === id);
 
-  // if exists
-  if (person) {
+  // // if exists
+  // if (person) {
+  //   res.json(person);
+  // } else {
+  //   res.status(404).end();
+  // }
+
+  Person.findById(req.params.id).then((person) => {
     res.json(person);
-  } else {
-    res.status(404).end();
-  }
+  });
 });
 
 // delete
@@ -95,26 +99,27 @@ app.post("/api/persons", (req, res) => {
   }
 
   // create an array only with persons name
-  const verifPerson = persons.map((person) => person.name);
+  // const verifPerson = persons.map((person) => person.name);
 
   // verify if exists
-  if (verifPerson.some((person) => body.name === person)) {
-    return res.status(400).json({
-      error: "name must be unique",
-    });
-  }
+  // if (verifPerson.some((person) => body.name === person)) {
+  //   return res.status(400).json({
+  //     error: "name must be unique",
+  //   });
+  // }
 
   // CREATE
 
-  const person = {
-    id: generateId(),
+  const person = new Person({
+    // id: generateId(),
     name: body.name,
     number: body.number,
-  };
+  });
 
-  persons = persons.concat(person);
-
-  res.json(person);
+  // persons = persons.concat(person);
+  person.save().then((savedPerson) => {
+    res.json(savedPerson);
+  });
 });
 
 const PORT = process.env.PORT;
