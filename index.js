@@ -137,7 +137,7 @@ app.post("/api/persons", (req, res) => {
 });
 
 // update contact
-app.put("/api/persons:id", (req, res, next) => {
+app.put("/api/persons/:id", (req, res, next) => {
   const body = req.body;
 
   const person = {
