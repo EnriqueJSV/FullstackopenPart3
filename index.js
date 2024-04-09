@@ -58,7 +58,7 @@ app.get("/api/persons", (req, res) => {
 });
 
 // get one person
-app.get("/api/persons/:id", (req, res) => {
+app.get("/api/persons/:id", (req, res, next) => {
   // const id = Number(req.params.id);
   // const person = persons.find((person) => person.id === id);
 
@@ -85,13 +85,13 @@ app.get("/api/persons/:id", (req, res) => {
 });
 
 // delete
-app.delete("/api/persons/:id", (req, res) => {
+app.delete("/api/persons/:id", (req, res, next) => {
   // const id = Number(req.params.id);
   // persons = persons.filter((person) => person.id !== id);
   // res.status(204).end();
 
   Person.findByIdAndDelete(req.params.id)
-    .then((result) => res.status(204).end)
+    .then((result) => res.status(204).end())
     .catch((err) => next(err));
 });
 
