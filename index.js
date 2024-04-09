@@ -47,9 +47,12 @@ app.get("/", (req, res) => {
 
 // get info
 app.get("/api/info", (req, res) => {
-  const total = persons.length;
   const date = new Date();
-  res.send(`<div>Phonebook has info for ${total} people <br/> ${date}</div>`);
+  Person.find({}).then((persons) =>
+    res.send(
+      `<div>Phonebook has info for ${persons.length} people <br/> ${date}</div>`
+    )
+  );
 });
 
 // get all
