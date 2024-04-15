@@ -17,29 +17,6 @@ app.use(
 app.use(cors()); //permite obtener la info para el front
 app.use(express.static("dist")); //Para poder ver el front como principal
 
-// let persons = [
-//   {
-//     id: 1,
-//     name: "Arto Hellas",
-//     number: "040-123456",
-//   },
-//   {
-//     id: 2,
-//     name: "Ada Lovelace",
-//     number: "39-44-5323523",
-//   },
-//   {
-//     id: 3,
-//     name: "Dan Abramov",
-//     number: "12-43-234345",
-//   },
-//   {
-//     id: 4,
-//     name: "Mary Poppendieck",
-//     number: "39-23-6423122",
-//   },
-// ];
-
 // get main
 app.get("/", (req, res) => {
   res.send("<h1>Working...</h1>");
@@ -62,16 +39,6 @@ app.get("/api/persons", (req, res) => {
 
 // get one person
 app.get("/api/persons/:id", (req, res, next) => {
-  // const id = Number(req.params.id);
-  // const person = persons.find((person) => person.id === id);
-
-  // // if exists
-  // if (person) {
-  //   res.json(person);
-  // } else {
-  //   res.status(404).end();
-  // }
-
   Person.findById(req.params.id)
     .then((person) => {
       if (person) {
@@ -81,29 +48,19 @@ app.get("/api/persons/:id", (req, res, next) => {
       }
     })
     .catch((err) => {
-      // console.log(err);
-      // res.status(400).send({ error: "malformatted id" });
       next(err);
     });
 });
 
 // delete
 app.delete("/api/persons/:id", (req, res, next) => {
-  // const id = Number(req.params.id);
-  // persons = persons.filter((person) => person.id !== id);
-  // res.status(204).end();
-
   Person.findByIdAndDelete(req.params.id)
     .then((result) => res.status(204).end())
     .catch((err) => next(err));
 });
 
-const generateId = () => {
-  return Math.floor(Math.random() * 10000);
-};
-
 // add new person
-app.post("/api/persons", (req, res) => {
+app.post("/api/persons", (req, res, next) => {
   const body = req.body;
 
   // ERRORS
@@ -115,40 +72,35 @@ app.post("/api/persons", (req, res) => {
     });
   }
 
-  // create an array only with persons name
-  // const verifPerson = persons.map((person) => person.name);
-
-  // verify if exists
-  // if (verifPerson.some((person) => body.name === person)) {
-  //   return res.status(400).json({
-  //     error: "name must be unique",
-  //   });
-  // }
-
   // CREATE
 
   const person = new Person({
-    // id: generateId(),
     name: body.name,
     number: body.number,
   });
 
-  // persons = persons.concat(person);
-  person.save().then((savedPerson) => {
-    res.json(savedPerson);
-  });
+  person
+    .save()
+    .then((savedPerson) => {
+      res.json(savedPerson);
+    })
+    .catch((err) => next(err));
 });
 
 // update contact
 app.put("/api/persons/:id", (req, res, next) => {
-  const body = req.body;
+  const { name, number } = req.body;
 
-  const person = {
-    name: body.name,
-    number: body.number,
-  };
+  // const person = {
+  //   name: body.name,
+  //   number: body.number,
+  // };
 
-  Person.findByIdAndUpdate(req.params.id, person, { new: true })
+  Person.findByIdAndUpdate(
+    req.params.id,
+    { name, number },
+    { new: true, runValidators: true, context: "query" }
+  )
     .then((updatedContact) => res.json(updatedContact))
     .catch((err) => next(err));
 });
@@ -171,6 +123,8 @@ const errorHandler = (error, req, res, next) => {
 
   if (error.name === "CastError") {
     return res.status(400).send({ error: "malformatted id" });
+  } else if (error.name === "ValidationError") {
+    return res.status(400).json({ error: error.message });
   }
 
   next(error);
