@@ -91,11 +91,6 @@ app.post("/api/persons", (req, res, next) => {
 app.put("/api/persons/:id", (req, res, next) => {
   const { name, number } = req.body;
 
-  // const person = {
-  //   name: body.name,
-  //   number: body.number,
-  // };
-
   Person.findByIdAndUpdate(
     req.params.id,
     { name, number },
